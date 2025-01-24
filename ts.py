@@ -1,3 +1,4 @@
+import re
 import tree_sitter_java as tsj
 from tree_sitter import Language, Parser
 from typing import Optional
@@ -24,11 +25,11 @@ def find_class_and_method_declarations(source_code, line_number):
                 # Extract the class declaration (up to the opening brace)
                 class_declaration_node = node.child_by_field_name('name')
                 if class_declaration_node:
-                    class_declaration = extract_declaration(source_code, node)
+                    class_declaration = extract_class_declaration(source_code, node)
                     class_javadoc = find_javadoc(source_code, node)
             elif node.type == 'method_declaration':
                 # Extract the method declaration (up to the opening brace)
-                method_declaration = extract_declaration(source_code, node)
+                method_declaration = extract_func_declaration(source_code, node)
                 method_javadoc = find_javadoc(source_code, node)
             # Recursively check the children nodes
             for child in node.children:
@@ -40,13 +41,27 @@ def find_class_and_method_declarations(source_code, line_number):
     return class_declaration, method_declaration, class_javadoc, method_javadoc
 
 # Helper function to extract declaration up to the opening brace
-def extract_declaration(source_code, node) -> str:
+def extract_class_declaration(source_code, node) -> str:
     start_byte = node.start_byte - 1
     opening_brace_index = source_code.find('{', start_byte, node.end_byte) + 1
     if opening_brace_index == -1:
         # If there is no brace, just return the node content
         return source_code[start_byte:node.end_byte].strip()
     return source_code[start_byte:opening_brace_index].strip()
+
+def extract_func_declaration(source_code, node) -> str:
+    start_byte = node.start_byte - 1
+    # Use regex to find the pattern ')\s*{' between the start and end bytes
+    pattern = r'\)\s*\{'
+    match = re.search(pattern, source_code[start_byte:node.end_byte])
+
+    if match:
+        # If the pattern is found, calculate the index just after the closing parenthesis
+        closing_parenthesis_index = start_byte + match.start() + 1
+        return source_code[start_byte:closing_parenthesis_index].strip()
+
+    # If no match is found, just return the node content
+    return source_code[start_byte:node.end_byte].strip()
 
 # Helper function to find Javadocs before a class or method declaration
 def find_javadoc(source_code, node) -> Optional[str]:
@@ -98,7 +113,8 @@ def get_line(source_code, line_number) -> Optional[str]:
     return lines[line_index]
 
 def format_output(class_declaration, method_declaration, class_javadoc, method_javadoc, line) -> str:
-    output = "```java\n"
+    # output = "```java\n"
+    output = ""
 
     if class_javadoc is None:
         output += f"{class_declaration}\n"
@@ -112,7 +128,7 @@ def format_output(class_declaration, method_declaration, class_javadoc, method_j
 
     output += "    // ...\n"
     output += f"{line}\n"
-    output += "```"
+    # output += "```"
 
     return output
 

@@ -3,9 +3,11 @@ import argparse
 import os
 import sys
 import re
+import html
 from typing import Tuple, List, Optional
 from dataclasses import dataclass
 from ts import get_code_snippet
+from template import HEADER, TABLE_HEADER, FOOTER
 
 @dataclass
 class LineData:
@@ -17,59 +19,73 @@ class LineData:
     expected_suffix: str
     line_of_code: str
 
-def main(project_root: str, input_file: str, output_file: str, rv_format: bool) -> None:
+def helper(lines: List[str], project_root: str) -> List[str]:
+    """Helper function to process each line of the input"""
+    result = []
+    for raw_line in lines:
+        # Parse line into components
+        line = preprocess_input(raw_line)
+        if line == '':
+            continue
+        data, error = parse_line(line)
+        if error:
+            print(error, file=sys.stderr)
+            result.append(output_error(line, error))
+            continue
+        if data.package.startswith('com.runtimeverification.rvpredict.runtime.RVPredictRuntime'):
+            print(f"Skipping line: {line}", file=sys.stderr)
+            continue
+        if data.line_num == -1:
+            result.append(output_unknown(line))
+            continue
+        processed_data, error = process_line(project_root, data)
+        if error:
+            print(error, file=sys.stderr)
+            result.append(output_error(line, error))
+            continue
+        code_snippet = get_code_snippet(processed_data.filepath, processed_data.line_num)
+        result.append(output(processed_data, code_snippet))
+    return result
+
+def is_rv_format(input_str: str) -> bool:
+    return not input_str.lstrip().startswith('=====')
+
+def main(project_root: str, input_file: str, output_file: str) -> None:
     """Main function that reads input lines and processes each one"""
+    originating_test = html.escape(input('Enter the name of the originating test: '))
+    field_declaration = html.escape(input('Enter the LOC of field declaration: '))
     try:
         with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
+            file_content = infile.read()
+            rv_format = is_rv_format(file_content)
             extract_func = extract_stack_trace_rv if rv_format else extract_stack_trace
-            fst_st, snd_st = extract_func(infile.read())
-            for raw_line in fst_st.split('\n'):
-                # Parse line into components
-                line = preprocess_input(raw_line)
-                if line == '':
-                    continue
-                data, error = parse_line(line)
-                if error:
-                    print(error, file=sys.stderr)
-                    output_error(line, error, outfile)
-                    continue
-                if data.package.startswith('com.runtimeverification.rvpredict.runtime.RVPredictRuntime'):
-                    print(f"Skipping line: {line}", file=sys.stderr)
-                    continue
-                if data.line_num == -1:
-                    output_unknown(line, outfile)
-                    continue
-                processed_data, error = process_line(project_root, data)
-                if error:
-                    print(error, file=sys.stderr)
-                    output_error(line, error, outfile)
-                    continue
-                code_snippet = get_code_snippet(processed_data.filepath, processed_data.line_num)
-                output(processed_data, code_snippet, outfile)
-            outfile.write('---\n\n')
-            for raw_line in snd_st.split('\n'):
-                # Parse line into components
-                line = preprocess_input(raw_line)
-                if line == '':
-                    continue
-                data, error = parse_line(line)
-                if error:
-                    print(error, file=sys.stderr)
-                    output_error(line, error, outfile)
-                    continue
-                if data.package.startswith('com.runtimeverification.rvpredict.runtime.RVPredictRuntime'):
-                    print(f"Skipping line: {line}", file=sys.stderr)
-                    continue
-                if data.line_num == -1:
-                    output_unknown(line, outfile)
-                    continue
-                processed_data, error = process_line(project_root, data)
-                if error:
-                    print(error, file=sys.stderr)
-                    output_error(line, error, outfile)
-                    continue
-                code_snippet = get_code_snippet(processed_data.filepath, processed_data.line_num)
-                output(processed_data, code_snippet, outfile)
+            fst_st, snd_st = extract_func(file_content)
+            fst = helper(fst_st.split('\n'), project_root)
+            snd = helper(snd_st.split('\n'), project_root)
+            outfile.write(HEADER)
+            outfile.write('<div class="header">\n')
+            outfile.write('<h1>Originating Test:</h1>\n')
+            outfile.write(f'<h2>{originating_test}</h2>\n')
+            outfile.write('<h1>Field Declaration:</h1>\n')
+            outfile.write('<div class="header-code">\n')
+            outfile.write(f'<pre><code class="large-code language-java">{field_declaration}</code></pre>\n')
+            outfile.write('</div>\n')
+            outfile.write('</div>\n')
+            outfile.write(TABLE_HEADER)
+            outfile.write('<tr>\n')
+            outfile.write(f'<td><strong>Depth:</strong> {len(fst)}</td>\n')
+            outfile.write(f'<td><strong>Depth:</strong> {len(snd)}</td>\n')
+            outfile.write('</tr>\n')
+            longer_index = max(len(fst), len(snd))
+            result = ''
+            for i in range(longer_index):
+                result += '<tr>\n'
+                result += fst[i] if i < len(fst) else '<td></td>'
+                result += snd[i] if i < len(snd) else '<td></td>'
+                result += '</tr>\n'
+            outfile.write(result)
+            outfile.write(FOOTER)
+
     except IOError as e:
         print(f"File error: {str(e)}", file=sys.stderr)
         sys.exit(1)
@@ -235,18 +251,18 @@ def process_line(project_root: str, data: LineData) -> Tuple[Optional[LineData],
     except Exception as e:
         return None, f"Error reading {file_path}: {str(e)}"
 
-def output(data: LineData, code_snippet: str, outfile) -> None:
-    """Format and write the final output to specified file"""
-    outfile.write(f"`{data.package}#{data.method}:{data.line_num}`\n")
-    outfile.write(f"{code_snippet}\n\n")
+def output(data: LineData, code_snippet: str) -> str:
+    result = "<td>\n"
+    result += f'<strong><code class="large-code">{data.package}#{data.method}:{data.line_num}</code></strong>\n'
+    result += f'<pre><code class="language-java large-code">\n{html.escape(code_snippet)}</code></pre>\n'
+    result += "</td>"
+    return result
 
-def output_unknown(line: str, outfile) -> None:
-    """Write unknown line format to file"""
-    outfile.write(f"```\n{line.strip()}\n```\n\n")
+def output_unknown(line: str) -> str:
+    return f'<td><strong><code class="large-code">Unknown line</code></strong><br><div class="wrap">{html.escape(line)}</div></td>'
 
-def output_error(line: str, error: str, outfile) -> None:
-    """Write error message to file"""
-    outfile.write(f"```\n{line.strip()}\n{error}\n```\n\n")
+def output_error(line: str, error: str) -> str:
+    return f'<td><strong>Error</strong><br><code class="large-code">{html.escape(line)}</code><br>{error}</td>'
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -265,11 +281,6 @@ if __name__ == "__main__":
         'output_file',
         help='Path to output file for code lines'
     )
-    parser.add_argument(
-        '--rv',
-        action='store_true',
-        help='Flag to indicate input is in RV-Predict format'
-    )
     args = parser.parse_args()
-    main(args.project_root, args.input_file, args.output_file, args.rv)
+    main(args.project_root, args.input_file, args.output_file)
 
