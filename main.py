@@ -54,6 +54,7 @@ def main(project_root: str, input_file: str, output_file: str) -> None:
     """Main function that reads input lines and processes each one"""
     originating_test = html.escape(input('Enter the name of the originating test: '))
     field_declaration = html.escape(input('Enter the LOC of field declaration: '))
+    algorithm = html.escape(input('Enter the name of the algorithm: '))
     try:
         with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
             file_content = infile.read()
@@ -66,6 +67,8 @@ def main(project_root: str, input_file: str, output_file: str) -> None:
             outfile.write('<div class="header">\n')
             outfile.write('<h1>Originating Test:</h1>\n')
             outfile.write(f'<h2>{originating_test}</h2>\n')
+            outfile.write('<h1>Algorithm:</h1>\n')
+            outfile.write(f'<h2>{algorithm}</h2>\n')
             outfile.write('<h1>Field Declaration:</h1>\n')
             outfile.write('<div class="header-code">\n')
             outfile.write(f'<pre><code class="large-code language-java">{field_declaration}</code></pre>\n')
