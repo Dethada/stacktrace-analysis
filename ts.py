@@ -52,13 +52,15 @@ def extract_class_declaration(source_code, node) -> str:
 def extract_func_declaration(source_code, node) -> str:
     start_byte = node.start_byte - 1
     # Use regex to find the pattern ')\s*{' between the start and end bytes
-    pattern = r'\)\s*\{'
+    pattern = r'\).*\{'
     match = re.search(pattern, source_code[start_byte:node.end_byte])
 
     if match:
-        # If the pattern is found, calculate the index just after the closing parenthesis
-        closing_parenthesis_index = start_byte + match.start() + 1
-        return source_code[start_byte:closing_parenthesis_index].strip()
+        # If the pattern is found, calculate the index at the end of the match
+        opening_brace_index = start_byte + match.end()
+        return source_code[start_byte:opening_brace_index].strip()
+        # closing_parenthesis_index = start_byte + match.start() + 1
+        # return source_code[start_byte:closing_parenthesis_index].strip()
 
     # If no match is found, just return the node content
     return source_code[start_byte:node.end_byte].strip()
