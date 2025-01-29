@@ -211,6 +211,35 @@ def parse_line(line: str) -> Tuple[Optional[LineData], Optional[str]]:
         line_of_code=""
     ), None
 
+def get_directories(projects_root: str) -> List[str]:
+    """Get all directories in the project root"""
+    return [name for name in os.listdir(projects_root) if os.path.isdir(os.path.join(projects_root, name))]
+
+def find_most_likely_project(package_name: str, project_directories: List[str]) -> Optional[str]:
+    """
+    Find the most likely project for a given package name.
+
+    Args:
+        package_name (str): The Java package name.
+        project_directories (list): A list of project directories.
+
+    Returns:
+        str: The most likely project directory.
+    """
+    # Split the package name into its constituent parts
+    package_parts = package_name.split('.')
+
+    # Iterate over each package part
+    for part in package_parts:
+        # Iterate over each project directory
+        for project in project_directories:
+            # Check if the package part is in the project directory (case-insensitive)
+            if part.lower() == project.lower():
+                return project
+
+    # not found
+    return None
+
 def find_file_by_suffix(project_root: str, expected_suffix: str) -> List[str]:
     """Search directory tree for files matching path suffix"""
     matches: List[str] = []
@@ -225,8 +254,12 @@ def find_file_by_suffix(project_root: str, expected_suffix: str) -> List[str]:
 
     return matches
 
-def process_line(project_root: str, data: LineData) -> Tuple[Optional[LineData], Optional[str]]:
+def process_line(projects_root: str, data: LineData) -> Tuple[Optional[LineData], Optional[str]]:
     """Process a parsed LineData object to find and read the source line"""
+    project = find_most_likely_project(data.package, get_directories(projects_root))
+    if not project:
+        return None, f"No project found for package: {data.package}"
+    project_root = os.path.join(projects_root, project)
     # Find matching files
     matches = find_file_by_suffix(project_root, data.expected_suffix)
     if not matches:
@@ -281,8 +314,8 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument(
-        'project_root',
-        help='Path to the root directory of the project'
+        'projects_root',
+        help='Path to the root directory of the projects'
     )
     parser.add_argument(
         'input_file',
@@ -293,5 +326,5 @@ if __name__ == "__main__":
         help='Path to output file for code lines'
     )
     args = parser.parse_args()
-    main(args.project_root, args.input_file, args.output_file)
+    main(args.projects_root, args.input_file, args.output_file)
 
