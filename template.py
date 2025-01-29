@@ -62,8 +62,10 @@ HEADER = '''
         overflow-x: auto;
         margin: 0 auto;
         padding-bottom: 15px;
+        text-align: left;
+        font-size: 1.1em;
     }
-        .hljs-ln-numbers {
+    .hljs-ln-numbers {
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         -khtml-user-select: none;

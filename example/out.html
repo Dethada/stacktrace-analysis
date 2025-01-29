@@ -4,11 +4,11 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="src/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
-    <script>hljs.highlightAll();</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.9.0/highlightjs-line-numbers.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/languages/java.min.js"></script>
+    <script>hljs.highlightAll();hljs.initLineNumbersOnLoad({singleLine: true});</script>
     <style>
     body {
         background: #f8f9fa;
@@ -38,7 +38,7 @@
         border-collapse: collapse;
     }
     th, td {
-        width: 50%; /* Split columns equally */
+        width: auto;
         vertical-align: top;
         padding: 10px;
     }
@@ -62,17 +62,49 @@
         overflow-x: auto;
         margin: 0 auto;
         padding-bottom: 15px;
+        text-align: left;
+        font-size: 1.1em;
+    }
+    .hljs-ln-numbers {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        text-align: center;
+        color: #ccc;
+        border-right: 1px solid #CCC;
+        vertical-align: top;
+        padding-right: 5px;
+
+        /* your custom style here */
+        width: 30px; /* Fixed width for line numbers */
+        min-width: 30px; /* Ensure it doesn't shrink */
+        box-sizing: border-box; /* Include padding in width */
+    }
+    /* for block of code */
+    .hljs-ln-code {
+        padding-left: 10px;
+    }
+    .seperator {
+        font-size: 1.2em;
     }
     </style>
   </head>
 <div class="header">
 <h1>Originating Test:</h1>
-<h2>io.lettuce.core.metrics.DefaultCommandLatencyCollectorUnitTests#verifyCummulativeMetrics</h2>
+<h2>io.lettuce.core.RedisClientFactoryUnitTests#clientResources</h2>
 <h1>Algorithm:</h1>
 <h2>shb</h2>
 <h1>Field Declaration:</h1>
 <div class="header-code">
-<pre><code class="large-code language-java">protected final long intervalEndTimes[];</code></pre>
+<pre><code class="large-code language-java nohljsln">/**
+ * Threading - synchronized(this). We are required to hold the monitor to use Java&#x27;s underlying wait()/notifyAll().
+ */
+private short waiters;
+</code></pre>
 </div>
 </div>
 
@@ -87,367 +119,860 @@
   </thead>
   <tbody>
 <tr>
-<td><strong>Depth:</strong> 14</td>
-<td><strong>Depth:</strong> 8</td>
+<td><strong>Depth:</strong> 31</td>
+<td><strong>Depth:</strong> 5</td>
 </tr>
 <tr>
 <td>
-<strong><code class="large-code">org.LatencyUtils.MovingAverageIntervalEstimator#recordIntervalAndReturnWindowPosition:50</code></strong>
-<pre><code class="language-java large-code">
-/**
- * A moving average interval estimator. Estimates intervals by averaging the interval values recorded in a
- * moving window. Will only provide average estimate once enough intervals have been collected to fill the
- * window, and will return an impossibly long interval estimate until then.
- */
-public class MovingAverageIntervalEstimator extends IntervalEstimator {
-int recordIntervalAndReturnWindowPosition(long when) {
-    // ...
-        intervalEndTimes[positionToSwap] = when;
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#checkNotifyWaiters:648</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
 </code></pre>
-</td><td>
-<strong><code class="large-code">org.LatencyUtils.TimeCappedMovingAverageIntervalEstimator#determineNumberOfWindowPositionsOutsideOfTimeCap:244</code></strong>
-<pre><code class="language-java large-code">
-public class TimeCappedMovingAverageIntervalEstimator extends MovingAverageIntervalEstimator {
-private int determineNumberOfWindowPositionsOutsideOfTimeCap(long when) {
-    // ...
-        if (intervalEndTimes[currentPosition] &gt;= timeCapStartTime) {
-</code></pre>
-</td></tr>
-<tr>
-<td>
-<strong><code class="large-code">org.LatencyUtils.TimeCappedMovingAverageIntervalEstimator#recordInterval:83</code></strong>
-<pre><code class="language-java large-code">
-public class TimeCappedMovingAverageIntervalEstimator extends MovingAverageIntervalEstimator {
-@Override
-    public void recordInterval(long when) {
-    // ...
-        super.recordIntervalAndReturnWindowPosition(when);
-</code></pre>
-</td><td>
-<strong><code class="large-code">org.LatencyUtils.TimeCappedMovingAverageIntervalEstimator#determineEarliestQualifyingTimeInWindow:228</code></strong>
-<pre><code class="language-java large-code">
-public class TimeCappedMovingAverageIntervalEstimator extends MovingAverageIntervalEstimator {
-private long determineEarliestQualifyingTimeInWindow(final long when) {
-    // ...
-        int numberOfWindowPositionsOutsideOfTimeCap = determineNumberOfWindowPositionsOutsideOfTimeCap(when);
-</code></pre>
-</td></tr>
-<tr>
-<td>
-<strong><code class="large-code">org.LatencyUtils.LatencyStats#trackRecordingInterval:417</code></strong>
-<pre><code class="language-java large-code">
-/**
- * LatencyStats objects are used to track and report on the behavior of latencies across measurements.
- * recorded into a a given LatencyStats instance. Latencies are recorded using
- * {@link #recordLatency}, which provides a thread safe, wait free, and lossless recording method.
- * The accumulated behavior across the recorded latencies in a given LatencyStats instance can be
- * examined in detail using interval and accumulated HdrHistogram histograms
- * (see {@link org.HdrHistogram.Histogram}).
- * &lt;p&gt;
- * LatencyStats instances maintain internal histogram data that track all recoded latencies. Interval
- * histogram data can be sampled with the {@link #getIntervalHistogram},
- * {@link #getIntervalHistogramInto}, or {@link #addIntervalHistogramTo} calls.
- * &lt;p&gt;
- * Recorded latencies are auto-corrected for experienced pauses by leveraging pause detectors and
- * moving window average interval estimators, compensating for coordinated omission. While typical
- * histogram use deals with corrected data, LatencyStats instances do keep track of the raw,
- * uncorrected records, which can be accessed via the {@link #getLatestUncorrectedIntervalHistogram}
- * and {@link #getLatestUncorrectedIntervalHistogramInto} calls.
- * &lt;p&gt;
- * LatencyStats objects can be instantiated either directly via the provided constructors, or by
- * using the fluent API builder supported by {@link org.LatencyUtils.LatencyStats.Builder}.
- *
- * &lt;h3&gt;Correction Technique&lt;/h3&gt;
- * In addition to tracking the raw latency recordings provided via {@link #recordLatency}, each
- * LatencyStats instance maintains an internal interval estimator that tracks the expected
- * interval between latency recordings. Whenever a stall in measurement is detected by a given
- * pause detector, each LatencyStats instances that uses that pause detector will be notified,
- * and will generate correcting latency entries (that are separately tracked internally).
- * Correcting latency entries are computed to &quot;fill in&quot; detected measurement pauses by projecting
- * the observed recording rate into the pause gap, and creating a linearly diminishing latency
- * measurement for each missed recording interval.
- * &lt;p&gt;
- * Pause detection and interval estimation are both configurable, and each LatencyStats instance
- * can operate with potentially independent pause detector and interval estimator settings.
- * &lt;p&gt;
- * A configurable default pause detector is (by default) shared between LatencyStats instances
- * that are not provided with a specific pause detector at instantiation. If the default pause
- * detector is not explicitly set, it will itself default to creating (and starting) a single
- * instance of {@link org.LatencyUtils.SimplePauseDetector}, which uses consensus observation
- * of a pause across multiple observing threads as a detection technique.
- * &lt;p&gt;
- * Custom pause detectors can be provided (by subclassing {@link org.LatencyUtils.PauseDetector}).
- * E.g. a pause detector that pauses GC log output rather than directly measuring observations
- * can be constructed. A custom pause detector can be especially useful in situations where a
- * stall in the operation and latency measurement of an application&#x27;s is known and detectable
- * by the application level, but would not be detectable as a process-wide stall in execution
- * (which {@link org.LatencyUtils.SimplePauseDetector} is built to detect).
- * &lt;p&gt;
- * Interval estimation is done by using a time-capped moving window average estimator, with
- * the expected interval computed to be the average of measurement intervals within the window
- * (with the window being capped by both count and time). See
- * {@link TimeCappedMovingAverageIntervalEstimator} for more details. The estimator window
- * length and time cap can both be configured when instantiating a LatencyStats object
- * (defaults are 1024, and 10 seconds).
- *
- */
-public class LatencyStats {
-private void trackRecordingInterval() {
-    // ...
-        intervalEstimator.recordInterval(now);
-</code></pre>
-</td><td>
-<strong><code class="large-code">org.LatencyUtils.TimeCappedMovingAverageIntervalEstimator#eliminateStalePauses:197</code></strong>
-<pre><code class="language-java large-code">
-public class TimeCappedMovingAverageIntervalEstimator extends MovingAverageIntervalEstimator {
-private void eliminateStalePauses(final long when) {
-    // ...
-        long newEarliestQualifyingTimeInWindow = determineEarliestQualifyingTimeInWindow(when);
-</code></pre>
-</td></tr>
-<tr>
-<td>
-<strong><code class="large-code">org.LatencyUtils.LatencyStats#recordLatency:200</code></strong>
-<pre><code class="language-java large-code">
-/**
- * LatencyStats objects are used to track and report on the behavior of latencies across measurements.
- * recorded into a a given LatencyStats instance. Latencies are recorded using
- * {@link #recordLatency}, which provides a thread safe, wait free, and lossless recording method.
- * The accumulated behavior across the recorded latencies in a given LatencyStats instance can be
- * examined in detail using interval and accumulated HdrHistogram histograms
- * (see {@link org.HdrHistogram.Histogram}).
- * &lt;p&gt;
- * LatencyStats instances maintain internal histogram data that track all recoded latencies. Interval
- * histogram data can be sampled with the {@link #getIntervalHistogram},
- * {@link #getIntervalHistogramInto}, or {@link #addIntervalHistogramTo} calls.
- * &lt;p&gt;
- * Recorded latencies are auto-corrected for experienced pauses by leveraging pause detectors and
- * moving window average interval estimators, compensating for coordinated omission. While typical
- * histogram use deals with corrected data, LatencyStats instances do keep track of the raw,
- * uncorrected records, which can be accessed via the {@link #getLatestUncorrectedIntervalHistogram}
- * and {@link #getLatestUncorrectedIntervalHistogramInto} calls.
- * &lt;p&gt;
- * LatencyStats objects can be instantiated either directly via the provided constructors, or by
- * using the fluent API builder supported by {@link org.LatencyUtils.LatencyStats.Builder}.
- *
- * &lt;h3&gt;Correction Technique&lt;/h3&gt;
- * In addition to tracking the raw latency recordings provided via {@link #recordLatency}, each
- * LatencyStats instance maintains an internal interval estimator that tracks the expected
- * interval between latency recordings. Whenever a stall in measurement is detected by a given
- * pause detector, each LatencyStats instances that uses that pause detector will be notified,
- * and will generate correcting latency entries (that are separately tracked internally).
- * Correcting latency entries are computed to &quot;fill in&quot; detected measurement pauses by projecting
- * the observed recording rate into the pause gap, and creating a linearly diminishing latency
- * measurement for each missed recording interval.
- * &lt;p&gt;
- * Pause detection and interval estimation are both configurable, and each LatencyStats instance
- * can operate with potentially independent pause detector and interval estimator settings.
- * &lt;p&gt;
- * A configurable default pause detector is (by default) shared between LatencyStats instances
- * that are not provided with a specific pause detector at instantiation. If the default pause
- * detector is not explicitly set, it will itself default to creating (and starting) a single
- * instance of {@link org.LatencyUtils.SimplePauseDetector}, which uses consensus observation
- * of a pause across multiple observing threads as a detection technique.
- * &lt;p&gt;
- * Custom pause detectors can be provided (by subclassing {@link org.LatencyUtils.PauseDetector}).
- * E.g. a pause detector that pauses GC log output rather than directly measuring observations
- * can be constructed. A custom pause detector can be especially useful in situations where a
- * stall in the operation and latency measurement of an application&#x27;s is known and detectable
- * by the application level, but would not be detectable as a process-wide stall in execution
- * (which {@link org.LatencyUtils.SimplePauseDetector} is built to detect).
- * &lt;p&gt;
- * Interval estimation is done by using a time-capped moving window average estimator, with
- * the expected interval computed to be the average of measurement intervals within the window
- * (with the window being capped by both count and time). See
- * {@link TimeCappedMovingAverageIntervalEstimator} for more details. The estimator window
- * length and time cap can both be configured when instantiating a LatencyStats object
- * (defaults are 1024, and 10 seconds).
- *
- */
-public class LatencyStats {
-    /**
-     * Record a latency value in the LatencyStats object
-     * @param latency latency value (in nanoseconds) to record
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="643">    /**
+     * Check if there are any waiters and if so notify these.
+     * @return {@code true} if there are any listeners attached to the promise, {@code false} otherwise.
      */
-public void recordLatency(long latency) {
-    // ...
-            trackRecordingInterval();
+private synchronized boolean checkNotifyWaiters() {
+        if (waiters &gt; 0) {
+            notifyAll();
+        }
+        return listener != null || listeners != null;
+    }
 </code></pre>
 </td><td>
-<strong><code class="large-code">org.LatencyUtils.TimeCappedMovingAverageIntervalEstimator#getEstimatedInterval:90</code></strong>
-<pre><code class="language-java large-code">
-public class TimeCappedMovingAverageIntervalEstimator extends MovingAverageIntervalEstimator {
-@Override
-    public synchronized long getEstimatedInterval(final long when) {
-    // ...
-        eliminateStalePauses(when);
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#incWaiters:658</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="654">private void incWaiters() {
+        if (waiters == Short.MAX_VALUE) {
+            throw new IllegalStateException(&quot;too many waiters: &quot; + this);
+        }
+        ++waiters;
+    }
 </code></pre>
 </td></tr>
 <tr>
-<td><strong>Error</strong><br><code class="large-code">io.lettuce.core.metrics.DefaultCommandLatencyCollector.recordCommandLatency(DefaultCommandLatencyCollector.java:132))</code><br>No file found ending with 'io/lettuce/core/metrics/DefaultCommandLatencyCollector.java'</td><td>
-<strong><code class="large-code">org.LatencyUtils.LatencyStats#recordDetectedPause:402</code></strong>
-<pre><code class="language-java large-code">
-/**
- * LatencyStats objects are used to track and report on the behavior of latencies across measurements.
- * recorded into a a given LatencyStats instance. Latencies are recorded using
- * {@link #recordLatency}, which provides a thread safe, wait free, and lossless recording method.
- * The accumulated behavior across the recorded latencies in a given LatencyStats instance can be
- * examined in detail using interval and accumulated HdrHistogram histograms
- * (see {@link org.HdrHistogram.Histogram}).
- * &lt;p&gt;
- * LatencyStats instances maintain internal histogram data that track all recoded latencies. Interval
- * histogram data can be sampled with the {@link #getIntervalHistogram},
- * {@link #getIntervalHistogramInto}, or {@link #addIntervalHistogramTo} calls.
- * &lt;p&gt;
- * Recorded latencies are auto-corrected for experienced pauses by leveraging pause detectors and
- * moving window average interval estimators, compensating for coordinated omission. While typical
- * histogram use deals with corrected data, LatencyStats instances do keep track of the raw,
- * uncorrected records, which can be accessed via the {@link #getLatestUncorrectedIntervalHistogram}
- * and {@link #getLatestUncorrectedIntervalHistogramInto} calls.
- * &lt;p&gt;
- * LatencyStats objects can be instantiated either directly via the provided constructors, or by
- * using the fluent API builder supported by {@link org.LatencyUtils.LatencyStats.Builder}.
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#setValue0:635</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="632">private boolean setValue0(Object objResult) {
+        if (RESULT_UPDATER.compareAndSet(this, null, objResult) ||
+            RESULT_UPDATER.compareAndSet(this, UNCANCELLABLE, objResult)) {
+            if (checkNotifyWaiters()) {
+                notifyListeners();
+            }
+            return true;
+        }
+        return false;
+    }
+</code></pre>
+</td><td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#await0:697</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="674">private boolean await0(long timeoutNanos, boolean interruptable) throws InterruptedException {
+        if (isDone()) {
+            return true;
+        }
+
+        if (timeoutNanos &lt;= 0) {
+            return isDone();
+        }
+
+        if (interruptable &amp;&amp; Thread.interrupted()) {
+            throw new InterruptedException(toString());
+        }
+
+        checkDeadLock();
+
+        // Start counting time from here instead of the first line of this method,
+        // to avoid/postpone performance cost of System.nanoTime().
+        final long startTime = System.nanoTime();
+        synchronized (this) {
+            boolean interrupted = false;
+            try {
+                long waitTime = timeoutNanos;
+                while (!isDone() &amp;&amp; waitTime &gt; 0) {
+                    incWaiters();
+                    try {
+                        wait(waitTime / 1000000, (int) (waitTime % 1000000));
+                    } catch (InterruptedException e) {
+                        if (interruptable) {
+                            throw e;
+                        } else {
+                            interrupted = true;
+                        }
+                    } finally {
+                        decWaiters();
+                    }
+                    // Check isDone() in advance, try to avoid calculating the elapsed time later.
+                    if (isDone()) {
+                        return true;
+                    }
+                    // Calculate the elapsed time here instead of in the while condition,
+                    // try to avoid performance cost of System.nanoTime() in the first loop of while.
+                    waitTime = timeoutNanos - (System.nanoTime() - startTime);
+                }
+                return isDone();
+            } finally {
+                if (interrupted) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+</code></pre>
+</td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#setSuccess0:625</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="624">private boolean setSuccess0(V result) {
+        return setValue0(result == null ? SUCCESS : result);
+    }
+</code></pre>
+</td><td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#await:295</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="293">@Override
+    public boolean await(long timeout, TimeUnit unit) throws InterruptedException {
+        return await0(unit.toNanos(timeout), true);
+    }
+</code></pre>
+</td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#setSuccess:97</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="95">@Override
+    public Promise&lt;V&gt; setSuccess(V result) {
+        if (setSuccess0(result)) {
+            return this;
+        }
+        throw new IllegalStateException(&quot;complete already: &quot; + this);
+    }
+</code></pre>
+</td><td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#get:359</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="354">@SuppressWarnings(&quot;unchecked&quot;)
+    @Override
+    public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+        Object result = this.result;
+        if (!isDone0(result)) {
+            if (!await(timeout, unit)) {
+                throw new TimeoutException();
+            }
+            result = this.result;
+        }
+        if (result == SUCCESS || result == UNCANCELLABLE) {
+            return null;
+        }
+        Throwable cause = cause0(result);
+        if (cause == null) {
+            return (V) result;
+        }
+        if (cause instanceof CancellationException) {
+            throw (CancellationException) cause;
+        }
+        throw new ExecutionException(cause);
+    }
+</code></pre>
+</td></tr>
+<tr>
+<td><strong>Error</strong><br><code class="large-code">io.lettuce.core.resource.PromiseAdapter.lambda$toBooleanPromise$0(PromiseAdapter.java:36))</code><br>No file found ending with 'io/lettuce/core/resource/PromiseAdapter.java'</td><td><strong>Error</strong><br><code class="large-code">io.lettuce.test.resource.TestClientResources$1.run(TestClientResources.java:45))</code><br>No file found ending with 'io/lettuce/test/resource/TestClientResources.java'</td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#notifyListener0:590</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="587">@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+    private static void notifyListener0(Future future, GenericFutureListener l) {
+        try {
+            l.operationComplete(future);
+        } catch (Throwable t) {
+            if (logger.isWarnEnabled()) {
+                logger.warn(&quot;An exception was thrown by &quot; + l.getClass().getName() + &quot;.operationComplete()&quot;, t);
+            }
+        }
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#notifyListenersNow:557</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="538">private void notifyListenersNow() {
+        GenericFutureListener listener;
+        DefaultFutureListeners listeners;
+        synchronized (this) {
+            listener = this.listener;
+            listeners = this.listeners;
+            // Only proceed if there are listeners to notify and we are not already notifying listeners.
+            if (notifyingListeners || (listener == null &amp;&amp; listeners == null)) {
+                return;
+            }
+            notifyingListeners = true;
+            if (listener != null) {
+                this.listener = null;
+            } else {
+                this.listeners = null;
+            }
+        }
+        for (;;) {
+            if (listener != null) {
+                notifyListener0(this, listener);
+            } else {
+                notifyListeners0(listeners);
+            }
+            synchronized (this) {
+                if (this.listener == null &amp;&amp; this.listeners == null) {
+                    // Nothing can throw from within this method, so setting notifyingListeners back to false does not
+                    // need to be in a finally block.
+                    notifyingListeners = false;
+                    return;
+                }
+                listener = this.listener;
+                listeners = this.listeners;
+                if (listener != null) {
+                    this.listener = null;
+                } else {
+                    this.listeners = null;
+                }
+            }
+        }
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#notifyListeners:492</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="484">private void notifyListeners() {
+        EventExecutor executor = executor();
+        if (executor.inEventLoop()) {
+            final InternalThreadLocalMap threadLocals = InternalThreadLocalMap.get();
+            final int stackDepth = threadLocals.futureListenerStackDepth();
+            if (stackDepth &lt; MAX_LISTENER_STACK_DEPTH) {
+                threadLocals.setFutureListenerStackDepth(stackDepth + 1);
+                try {
+                    notifyListenersNow();
+                } finally {
+                    threadLocals.setFutureListenerStackDepth(stackDepth);
+                }
+                return;
+            }
+        }
+
+        safeExecute(executor, new Runnable() {
+            @Override
+            public void run() {
+                notifyListenersNow();
+            }
+        });
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#setValue0:636</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="632">private boolean setValue0(Object objResult) {
+        if (RESULT_UPDATER.compareAndSet(this, null, objResult) ||
+            RESULT_UPDATER.compareAndSet(this, UNCANCELLABLE, objResult)) {
+            if (checkNotifyWaiters()) {
+                notifyListeners();
+            }
+            return true;
+        }
+        return false;
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#setSuccess0:625</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="624">private boolean setSuccess0(V result) {
+        return setValue0(result == null ? SUCCESS : result);
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#trySuccess:105</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="103">@Override
+    public boolean trySuccess(V result) {
+        return setSuccess0(result);
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.PromiseCombiner#tryPromise:170</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="20">/**
+ * &lt;p&gt;A promise combiner monitors the outcome of a number of discrete futures, then notifies a final, aggregate promise
+ * when all of the combined futures are finished. The aggregate promise will succeed if and only if all of the combined
+ * futures succeed. If any of the combined futures fail, the aggregate promise will fail. The cause failure for the
+ * aggregate promise will be the failure for one of the failed combined futures; if more than one of the combined
+ * futures fails, exactly which cause of failure will be assigned to the aggregate promise is undefined.&lt;/p&gt;
  *
- * &lt;h3&gt;Correction Technique&lt;/h3&gt;
- * In addition to tracking the raw latency recordings provided via {@link #recordLatency}, each
- * LatencyStats instance maintains an internal interval estimator that tracks the expected
- * interval between latency recordings. Whenever a stall in measurement is detected by a given
- * pause detector, each LatencyStats instances that uses that pause detector will be notified,
- * and will generate correcting latency entries (that are separately tracked internally).
- * Correcting latency entries are computed to &quot;fill in&quot; detected measurement pauses by projecting
- * the observed recording rate into the pause gap, and creating a linearly diminishing latency
- * measurement for each missed recording interval.
- * &lt;p&gt;
- * Pause detection and interval estimation are both configurable, and each LatencyStats instance
- * can operate with potentially independent pause detector and interval estimator settings.
- * &lt;p&gt;
- * A configurable default pause detector is (by default) shared between LatencyStats instances
- * that are not provided with a specific pause detector at instantiation. If the default pause
- * detector is not explicitly set, it will itself default to creating (and starting) a single
- * instance of {@link org.LatencyUtils.SimplePauseDetector}, which uses consensus observation
- * of a pause across multiple observing threads as a detection technique.
- * &lt;p&gt;
- * Custom pause detectors can be provided (by subclassing {@link org.LatencyUtils.PauseDetector}).
- * E.g. a pause detector that pauses GC log output rather than directly measuring observations
- * can be constructed. A custom pause detector can be especially useful in situations where a
- * stall in the operation and latency measurement of an application&#x27;s is known and detectable
- * by the application level, but would not be detectable as a process-wide stall in execution
- * (which {@link org.LatencyUtils.SimplePauseDetector} is built to detect).
- * &lt;p&gt;
- * Interval estimation is done by using a time-capped moving window average estimator, with
- * the expected interval computed to be the average of measurement intervals within the window
- * (with the window being capped by both count and time). See
- * {@link TimeCappedMovingAverageIntervalEstimator} for more details. The estimator window
- * length and time cap can both be configured when instantiating a LatencyStats object
- * (defaults are 1024, and 10 seconds).
+ * &lt;p&gt;Callers may populate a promise combiner with any number of futures to be combined via the
+ * {@link PromiseCombiner#add(Future)} and {@link PromiseCombiner#addAll(Future[])} methods. When all futures to be
+ * combined have been added, callers must provide an aggregate promise to be notified when all combined promises have
+ * finished via the {@link PromiseCombiner#finish(Promise)} method.&lt;/p&gt;
  *
+ * &lt;p&gt;This implementation is &lt;strong&gt;NOT&lt;/strong&gt; thread-safe and all methods must be called
+ * from the {@link EventExecutor} thread.&lt;/p&gt;
  */
-public class LatencyStats {
-private synchronized void recordDetectedPause(long pauseLength, long pauseEndTime) {
-    // ...
-            long estimatedInterval = intervalEstimator.getEstimatedInterval(pauseEndTime);
+public final class PromiseCombiner {
 </code></pre>
-</td></tr>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="169">private boolean tryPromise() {
+        return (cause == null) ? aggregatePromise.trySuccess(null) : aggregatePromise.tryFailure(cause);
+    }
+</code></pre>
+</td><td></td></tr>
 <tr>
-<td><strong>Error</strong><br><code class="large-code">io.lettuce.core.metrics.DefaultCommandLatencyCollectorUnitTests.setupData(DefaultCommandLatencyCollectorUnitTests.java:150))</code><br>No file found ending with 'io/lettuce/core/metrics/DefaultCommandLatencyCollectorUnitTests.java'</td><td>
-<strong><code class="large-code">org.LatencyUtils.LatencyStats#access$600:69</code></strong>
-<pre><code class="language-java large-code">
-/**
- * LatencyStats objects are used to track and report on the behavior of latencies across measurements.
- * recorded into a a given LatencyStats instance. Latencies are recorded using
- * {@link #recordLatency}, which provides a thread safe, wait free, and lossless recording method.
- * The accumulated behavior across the recorded latencies in a given LatencyStats instance can be
- * examined in detail using interval and accumulated HdrHistogram histograms
- * (see {@link org.HdrHistogram.Histogram}).
- * &lt;p&gt;
- * LatencyStats instances maintain internal histogram data that track all recoded latencies. Interval
- * histogram data can be sampled with the {@link #getIntervalHistogram},
- * {@link #getIntervalHistogramInto}, or {@link #addIntervalHistogramTo} calls.
- * &lt;p&gt;
- * Recorded latencies are auto-corrected for experienced pauses by leveraging pause detectors and
- * moving window average interval estimators, compensating for coordinated omission. While typical
- * histogram use deals with corrected data, LatencyStats instances do keep track of the raw,
- * uncorrected records, which can be accessed via the {@link #getLatestUncorrectedIntervalHistogram}
- * and {@link #getLatestUncorrectedIntervalHistogramInto} calls.
- * &lt;p&gt;
- * LatencyStats objects can be instantiated either directly via the provided constructors, or by
- * using the fluent API builder supported by {@link org.LatencyUtils.LatencyStats.Builder}.
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.PromiseCombiner#access$600:35</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="20">/**
+ * &lt;p&gt;A promise combiner monitors the outcome of a number of discrete futures, then notifies a final, aggregate promise
+ * when all of the combined futures are finished. The aggregate promise will succeed if and only if all of the combined
+ * futures succeed. If any of the combined futures fail, the aggregate promise will fail. The cause failure for the
+ * aggregate promise will be the failure for one of the failed combined futures; if more than one of the combined
+ * futures fails, exactly which cause of failure will be assigned to the aggregate promise is undefined.&lt;/p&gt;
  *
- * &lt;h3&gt;Correction Technique&lt;/h3&gt;
- * In addition to tracking the raw latency recordings provided via {@link #recordLatency}, each
- * LatencyStats instance maintains an internal interval estimator that tracks the expected
- * interval between latency recordings. Whenever a stall in measurement is detected by a given
- * pause detector, each LatencyStats instances that uses that pause detector will be notified,
- * and will generate correcting latency entries (that are separately tracked internally).
- * Correcting latency entries are computed to &quot;fill in&quot; detected measurement pauses by projecting
- * the observed recording rate into the pause gap, and creating a linearly diminishing latency
- * measurement for each missed recording interval.
- * &lt;p&gt;
- * Pause detection and interval estimation are both configurable, and each LatencyStats instance
- * can operate with potentially independent pause detector and interval estimator settings.
- * &lt;p&gt;
- * A configurable default pause detector is (by default) shared between LatencyStats instances
- * that are not provided with a specific pause detector at instantiation. If the default pause
- * detector is not explicitly set, it will itself default to creating (and starting) a single
- * instance of {@link org.LatencyUtils.SimplePauseDetector}, which uses consensus observation
- * of a pause across multiple observing threads as a detection technique.
- * &lt;p&gt;
- * Custom pause detectors can be provided (by subclassing {@link org.LatencyUtils.PauseDetector}).
- * E.g. a pause detector that pauses GC log output rather than directly measuring observations
- * can be constructed. A custom pause detector can be especially useful in situations where a
- * stall in the operation and latency measurement of an application&#x27;s is known and detectable
- * by the application level, but would not be detectable as a process-wide stall in execution
- * (which {@link org.LatencyUtils.SimplePauseDetector} is built to detect).
- * &lt;p&gt;
- * Interval estimation is done by using a time-capped moving window average estimator, with
- * the expected interval computed to be the average of measurement intervals within the window
- * (with the window being capped by both count and time). See
- * {@link TimeCappedMovingAverageIntervalEstimator} for more details. The estimator window
- * length and time cap can both be configured when instantiating a LatencyStats object
- * (defaults are 1024, and 10 seconds).
+ * &lt;p&gt;Callers may populate a promise combiner with any number of futures to be combined via the
+ * {@link PromiseCombiner#add(Future)} and {@link PromiseCombiner#addAll(Future[])} methods. When all futures to be
+ * combined have been added, callers must provide an aggregate promise to be notified when all combined promises have
+ * finished via the {@link PromiseCombiner#finish(Promise)} method.&lt;/p&gt;
  *
+ * &lt;p&gt;This implementation is &lt;strong&gt;NOT&lt;/strong&gt; thread-safe and all methods must be called
+ * from the {@link EventExecutor} thread.&lt;/p&gt;
  */
-public class LatencyStats {
-None
-    // ...
-public class LatencyStats {
+public final class PromiseCombiner {
 </code></pre>
-</td></tr>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="None">None
+</code></pre>
+</td><td></td></tr>
 <tr>
-<td><strong>Error</strong><br><code class="large-code">io.lettuce.core.metrics.DefaultCommandLatencyCollectorUnitTests.verifyCummulativeMetrics(DefaultCommandLatencyCollectorUnitTests.java:139))</code><br>No file found ending with 'io/lettuce/core/metrics/DefaultCommandLatencyCollectorUnitTests.java'</td><td>
-<strong><code class="large-code">org.LatencyUtils.LatencyStats$PauseTracker#handlePauseEvent:480</code></strong>
-<pre><code class="language-java large-code">
-    /**
-     * PauseTracker is used to feed pause correction histograms whenever a pause is reported:
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.PromiseCombiner$1#operationComplete0:62</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="20">/**
+ * &lt;p&gt;A promise combiner monitors the outcome of a number of discrete futures, then notifies a final, aggregate promise
+ * when all of the combined futures are finished. The aggregate promise will succeed if and only if all of the combined
+ * futures succeed. If any of the combined futures fail, the aggregate promise will fail. The cause failure for the
+ * aggregate promise will be the failure for one of the failed combined futures; if more than one of the combined
+ * futures fails, exactly which cause of failure will be assigned to the aggregate promise is undefined.&lt;/p&gt;
+ *
+ * &lt;p&gt;Callers may populate a promise combiner with any number of futures to be combined via the
+ * {@link PromiseCombiner#add(Future)} and {@link PromiseCombiner#addAll(Future[])} methods. When all futures to be
+ * combined have been added, callers must provide an aggregate promise to be notified when all combined promises have
+ * finished via the {@link PromiseCombiner#finish(Promise)} method.&lt;/p&gt;
+ *
+ * &lt;p&gt;This implementation is &lt;strong&gt;NOT&lt;/strong&gt; thread-safe and all methods must be called
+ * from the {@link EventExecutor} thread.&lt;/p&gt;
+ */
+public final class PromiseCombiner {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="55">private void operationComplete0(Future&lt;?&gt; future) {
+            assert executor.inEventLoop();
+            ++doneCount;
+            if (!future.isSuccess() &amp;&amp; cause == null) {
+                cause = future.cause();
+            }
+            if (doneCount == expectedCount &amp;&amp; aggregatePromise != null) {
+                tryPromise();
+            }
+        }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.PromiseCombiner$1#operationComplete:44</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="20">/**
+ * &lt;p&gt;A promise combiner monitors the outcome of a number of discrete futures, then notifies a final, aggregate promise
+ * when all of the combined futures are finished. The aggregate promise will succeed if and only if all of the combined
+ * futures succeed. If any of the combined futures fail, the aggregate promise will fail. The cause failure for the
+ * aggregate promise will be the failure for one of the failed combined futures; if more than one of the combined
+ * futures fails, exactly which cause of failure will be assigned to the aggregate promise is undefined.&lt;/p&gt;
+ *
+ * &lt;p&gt;Callers may populate a promise combiner with any number of futures to be combined via the
+ * {@link PromiseCombiner#add(Future)} and {@link PromiseCombiner#addAll(Future[])} methods. When all futures to be
+ * combined have been added, callers must provide an aggregate promise to be notified when all combined promises have
+ * finished via the {@link PromiseCombiner#finish(Promise)} method.&lt;/p&gt;
+ *
+ * &lt;p&gt;This implementation is &lt;strong&gt;NOT&lt;/strong&gt; thread-safe and all methods must be called
+ * from the {@link EventExecutor} thread.&lt;/p&gt;
+ */
+public final class PromiseCombiner {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="41">@Override
+        public void operationComplete(final Future&lt;?&gt; future) {
+            if (executor.inEventLoop()) {
+                operationComplete0(future);
+            } else {
+                executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        operationComplete0(future);
+                    }
+                });
+            }
+        }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#notifyListener0:590</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="587">@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+    private static void notifyListener0(Future future, GenericFutureListener l) {
+        try {
+            l.operationComplete(future);
+        } catch (Throwable t) {
+            if (logger.isWarnEnabled()) {
+                logger.warn(&quot;An exception was thrown by &quot; + l.getClass().getName() + &quot;.operationComplete()&quot;, t);
+            }
+        }
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#notifyListenersNow:557</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="538">private void notifyListenersNow() {
+        GenericFutureListener listener;
+        DefaultFutureListeners listeners;
+        synchronized (this) {
+            listener = this.listener;
+            listeners = this.listeners;
+            // Only proceed if there are listeners to notify and we are not already notifying listeners.
+            if (notifyingListeners || (listener == null &amp;&amp; listeners == null)) {
+                return;
+            }
+            notifyingListeners = true;
+            if (listener != null) {
+                this.listener = null;
+            } else {
+                this.listeners = null;
+            }
+        }
+        for (;;) {
+            if (listener != null) {
+                notifyListener0(this, listener);
+            } else {
+                notifyListeners0(listeners);
+            }
+            synchronized (this) {
+                if (this.listener == null &amp;&amp; this.listeners == null) {
+                    // Nothing can throw from within this method, so setting notifyingListeners back to false does not
+                    // need to be in a finally block.
+                    notifyingListeners = false;
+                    return;
+                }
+                listener = this.listener;
+                listeners = this.listeners;
+                if (listener != null) {
+                    this.listener = null;
+                } else {
+                    this.listeners = null;
+                }
+            }
+        }
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#notifyListeners:492</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="484">private void notifyListeners() {
+        EventExecutor executor = executor();
+        if (executor.inEventLoop()) {
+            final InternalThreadLocalMap threadLocals = InternalThreadLocalMap.get();
+            final int stackDepth = threadLocals.futureListenerStackDepth();
+            if (stackDepth &lt; MAX_LISTENER_STACK_DEPTH) {
+                threadLocals.setFutureListenerStackDepth(stackDepth + 1);
+                try {
+                    notifyListenersNow();
+                } finally {
+                    threadLocals.setFutureListenerStackDepth(stackDepth);
+                }
+                return;
+            }
+        }
+
+        safeExecute(executor, new Runnable() {
+            @Override
+            public void run() {
+                notifyListenersNow();
+            }
+        });
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#setValue0:636</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="632">private boolean setValue0(Object objResult) {
+        if (RESULT_UPDATER.compareAndSet(this, null, objResult) ||
+            RESULT_UPDATER.compareAndSet(this, UNCANCELLABLE, objResult)) {
+            if (checkNotifyWaiters()) {
+                notifyListeners();
+            }
+            return true;
+        }
+        return false;
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#setSuccess0:625</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="624">private boolean setSuccess0(V result) {
+        return setValue0(result == null ? SUCCESS : result);
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#setSuccess:97</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="95">@Override
+    public Promise&lt;V&gt; setSuccess(V result) {
+        if (setSuccess0(result)) {
+            return this;
+        }
+        throw new IllegalStateException(&quot;complete already: &quot; + this);
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.MultithreadEventExecutorGroup$1#operationComplete:117</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="29">/**
+ * Abstract base class for {@link EventExecutorGroup} implementations that handles their tasks with multiple threads at
+ * the same time.
+ */
+public abstract class MultithreadEventExecutorGroup extends AbstractEventExecutorGroup {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="114">@Override
+            public void operationComplete(Future&lt;Object&gt; future) throws Exception {
+                if (terminatedChildren.incrementAndGet() == children.length) {
+                    terminationFuture.setSuccess(null);
+                }
+            }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#notifyListener0:590</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="587">@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+    private static void notifyListener0(Future future, GenericFutureListener l) {
+        try {
+            l.operationComplete(future);
+        } catch (Throwable t) {
+            if (logger.isWarnEnabled()) {
+                logger.warn(&quot;An exception was thrown by &quot; + l.getClass().getName() + &quot;.operationComplete()&quot;, t);
+            }
+        }
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#notifyListenersNow:557</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="538">private void notifyListenersNow() {
+        GenericFutureListener listener;
+        DefaultFutureListeners listeners;
+        synchronized (this) {
+            listener = this.listener;
+            listeners = this.listeners;
+            // Only proceed if there are listeners to notify and we are not already notifying listeners.
+            if (notifyingListeners || (listener == null &amp;&amp; listeners == null)) {
+                return;
+            }
+            notifyingListeners = true;
+            if (listener != null) {
+                this.listener = null;
+            } else {
+                this.listeners = null;
+            }
+        }
+        for (;;) {
+            if (listener != null) {
+                notifyListener0(this, listener);
+            } else {
+                notifyListeners0(listeners);
+            }
+            synchronized (this) {
+                if (this.listener == null &amp;&amp; this.listeners == null) {
+                    // Nothing can throw from within this method, so setting notifyingListeners back to false does not
+                    // need to be in a finally block.
+                    notifyingListeners = false;
+                    return;
+                }
+                listener = this.listener;
+                listeners = this.listeners;
+                if (listener != null) {
+                    this.listener = null;
+                } else {
+                    this.listeners = null;
+                }
+            }
+        }
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise#access$200:35</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="None">None
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.DefaultPromise$1#run:503</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="35">public class DefaultPromise&lt;V&gt; extends AbstractFuture&lt;V&gt; implements Promise&lt;V&gt; {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="484">private void notifyListeners() {
+        EventExecutor executor = executor();
+        if (executor.inEventLoop()) {
+            final InternalThreadLocalMap threadLocals = InternalThreadLocalMap.get();
+            final int stackDepth = threadLocals.futureListenerStackDepth();
+            if (stackDepth &lt; MAX_LISTENER_STACK_DEPTH) {
+                threadLocals.setFutureListenerStackDepth(stackDepth + 1);
+                try {
+                    notifyListenersNow();
+                } finally {
+                    threadLocals.setFutureListenerStackDepth(stackDepth);
+                }
+                return;
+            }
+        }
+
+        safeExecute(executor, new Runnable() {
+            @Override
+            public void run() {
+                notifyListenersNow();
+            }
+        });
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.AbstractEventExecutor#runTask:173</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="33">/**
+ * Abstract base class for {@link EventExecutor} implementations.
+ */
+public abstract class AbstractEventExecutor extends AbstractExecutorService implements EventExecutor {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="172">protected static void runTask(@Execute Runnable task) {
+        task.run();
+    }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.GlobalEventExecutor$TaskRunner#run:262</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="37">/**
+ * Single-thread singleton {@link EventExecutor}.  It starts the thread automatically and stops it when there is no
+ * task pending in the task queue for {@code io.netty.globalEventExecutor.quietPeriodSeconds} second
+ * (default is 1 second).  Please note it is not scalable to schedule large number of tasks to this executor;
+ * use a dedicated executor.
+ */
+public final class GlobalEventExecutor extends AbstractScheduledEventExecutor implements OrderedEventExecutor {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="256">@Override
+        public void run() {
+            for (;;) {
+                Runnable task = takeTask();
+                if (task != null) {
+                    try {
+                        runTask(task);
+                    } catch (Throwable t) {
+                        logger.warn(&quot;Unexpected exception from the global event executor: &quot;, t);
+                    }
+
+                    if (task != quietPeriodTask) {
+                        continue;
+                    }
+                }
+
+                Queue&lt;ScheduledFutureTask&lt;?&gt;&gt; scheduledTaskQueue = GlobalEventExecutor.this.scheduledTaskQueue;
+                // Terminate if there is no task in the queue (except the noop task).
+                if (taskQueue.isEmpty() &amp;&amp; (scheduledTaskQueue == null || scheduledTaskQueue.size() == 1)) {
+                    // Mark the current thread as stopped.
+                    // The following CAS must always success and must be uncontended,
+                    // because only one thread should be running at the same time.
+                    boolean stopped = started.compareAndSet(true, false);
+                    assert stopped;
+
+                    // Check if there are pending entries added by execute() or schedule*() while we do CAS above.
+                    // Do not check scheduledTaskQueue because it is not thread-safe and can only be mutated from a
+                    // TaskRunner actively running tasks.
+                    if (taskQueue.isEmpty()) {
+                        // A) No new task was added and thus there&#x27;s nothing to handle
+                        //    -&gt; safe to terminate because there&#x27;s nothing left to do
+                        // B) A new thread started and handled all the new tasks.
+                        //    -&gt; safe to terminate the new thread will take care the rest
+                        break;
+                    }
+
+                    // There are pending tasks added again.
+                    if (!started.compareAndSet(false, true)) {
+                        // startThread() started a new thread and set &#x27;started&#x27; to true.
+                        // -&gt; terminate this thread so that the new thread reads from taskQueue exclusively.
+                        break;
+                    }
+
+                    // New tasks were added, but this worker was faster to set &#x27;started&#x27; to true.
+                    // i.e. a new worker thread was not started by startThread().
+                    // -&gt; keep this thread alive to handle the newly added entries.
+                }
+            }
+        }
+</code></pre>
+</td><td></td></tr>
+<tr>
+<td>
+<strong><code class="large-code">io.netty.util.internal.ThreadExecutorMap$2#run:74</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="24">/**
+ * Allow to retrieve the {@link EventExecutor} for the calling {@link Thread}.
+ */
+public final class ThreadExecutorMap {
+</code></pre>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="62">    /**
+     * Decorate the given {@link Runnable} and ensure {@link #currentExecutor()} will return {@code eventExecutor}
+     * when called from within the {@link Runnable} during execution.
      */
-private static class PauseTracker extends WeakReference&lt;LatencyStats&gt; implements PauseDetectorListener {
-public void handlePauseEvent(final long pauseLength, final long pauseEndTime) {
-    // ...
-                latencyStats.recordDetectedPause(pauseLength, pauseEndTime);
+public static Runnable apply(final Runnable command, final EventExecutor eventExecutor) {
+        ObjectUtil.checkNotNull(command, &quot;command&quot;);
+        ObjectUtil.checkNotNull(eventExecutor, &quot;eventExecutor&quot;);
+        return new Runnable() {
+            @Override
+            public void run() {
+                setCurrentEventExecutor(eventExecutor);
+                try {
+                    command.run();
+                } finally {
+                    setCurrentEventExecutor(null);
+                }
+            }
+        };
+    }
 </code></pre>
-</td></tr>
+</td><td></td></tr>
 <tr>
-<td><strong>Error</strong><br><code class="large-code">sun.reflect.NativeMethodAccessorImpl.invoke0(Native)</code><br>Invalid file:line format in line: sun.reflect.NativeMethodAccessorImpl.invoke0(Native)</td><td>
-<strong><code class="large-code">org.LatencyUtils.PauseDetector$PauseDetectorThread#run:107</code></strong>
-<pre><code class="language-java large-code">
-private class PauseDetectorThread extends Thread {
-public void run() {
-    // ...
-                            listener.handlePauseEvent(
+<td>
+<strong><code class="large-code">io.netty.util.concurrent.FastThreadLocalRunnable#run:30</code></strong><br>
+<strong class="seperator">Class</strong>
+<pre><code class="language-java large-code" data-ln-start-from="20">final class FastThreadLocalRunnable implements Runnable {
 </code></pre>
-</td></tr>
+<strong class="seperator">Method</strong>
+<pre><code class="language-java large-code" data-ln-start-from="27">@Override
+    public void run() {
+        try {
+            runnable.run();
+        } finally {
+            FastThreadLocal.removeAll();
+        }
+    }
+</code></pre>
+</td><td></td></tr>
 <tr>
-<td><strong>Error</strong><br><code class="large-code">Method))</code><br>Invalid line format: Method))</td><td></td></tr>
-<tr>
-<td><strong>Error</strong><br><code class="large-code">sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62))</code><br>No file found ending with 'sun/reflect/NativeMethodAccessorImpl.java'</td><td></td></tr>
-<tr>
-<td><strong>Error</strong><br><code class="large-code">sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43))</code><br>No file found ending with 'sun/reflect/DelegatingMethodAccessorImpl.java'</td><td></td></tr>
-<tr>
-<td><strong>Error</strong><br><code class="large-code">java.lang.reflect.Method.invoke(Method.java:498))</code><br>No file found ending with 'java/lang/reflect/Method.java'</td><td></td></tr>
-<tr>
-<td><strong>Error</strong><br><code class="large-code">java.util.ArrayList.forEach(ArrayList.java:1259))</code><br>No file found ending with 'java/util/ArrayList.java'</td><td></td></tr>
-<tr>
-<td><strong>Error</strong><br><code class="large-code">java.util.ArrayList.forEach(ArrayList.java:1259))</code><br>No file found ending with 'java/util/ArrayList.java'</td><td></td></tr>
+<td><strong>Error</strong><br><code class="large-code">java.lang.Thread.run(Thread.java:750))</code><br>No file found ending with 'java/lang/Thread.java'</td><td></td></tr>
 
   </tbody>
 </table>

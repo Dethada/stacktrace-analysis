@@ -4,6 +4,7 @@ import os
 import sys
 import re
 import html
+import tomllib
 from typing import Tuple, List, Optional
 from dataclasses import dataclass
 from ts import get_code_snippet
@@ -52,15 +53,19 @@ def is_rv_format(input_str: str) -> bool:
 
 def main(project_root: str, input_file: str, output_file: str) -> None:
     """Main function that reads input lines and processes each one"""
-    originating_test = html.escape(input('Enter the name of the originating test: '))
-    field_declaration = html.escape(input('Enter the LOC of field declaration: '))
-    algorithm = html.escape(input('Enter the name of the algorithm: '))
+    # originating_test = html.escape(input('Enter the name of the originating test: '))
+    # field_declaration = html.escape(input('Enter the LOC of field declaration: '))
+    # algorithm = html.escape(input('Enter the name of the algorithm: '))
     try:
-        with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
-            file_content = infile.read()
-            rv_format = is_rv_format(file_content)
+        with open(input_file, 'rb') as infile, open(output_file, 'w') as outfile:
+            data = tomllib.load(infile)
+            originating_test = html.escape(data['originating_test'])
+            field_declaration = html.escape(data['field_declaration'])
+            algorithm = html.escape(data['algorithm'])
+            raw_stack_trace = data['stack_trace']
+            rv_format = is_rv_format(raw_stack_trace)
             extract_func = extract_stack_trace_rv if rv_format else extract_stack_trace
-            fst_st, snd_st = extract_func(file_content)
+            fst_st, snd_st = extract_func(raw_stack_trace)
             fst = helper(fst_st.split('\n'), project_root)
             snd = helper(snd_st.split('\n'), project_root)
             outfile.write(HEADER)

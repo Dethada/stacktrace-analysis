@@ -1,0 +1,48 @@
+originating_test="io.lettuce.core.RedisClientFactoryUnitTests#clientResources"
+algorithm="shb"
+field_declaration="""
+/**
+ * Threading - synchronized(this). We are required to hold the monitor to use Java's underlying wait()/notifyAll().
+ */
+private short waiters;
+"""
+stack_trace="""
+==================Stack Trace==================
+io.netty.util.concurrent.DefaultPromise.checkNotifyWaiters(DefaultPromise.java:648))
+io.netty.util.concurrent.DefaultPromise.setValue0(DefaultPromise.java:635))
+io.netty.util.concurrent.DefaultPromise.setSuccess0(DefaultPromise.java:625))
+io.netty.util.concurrent.DefaultPromise.setSuccess(DefaultPromise.java:97))
+io.lettuce.core.resource.PromiseAdapter.lambda$toBooleanPromise$0(PromiseAdapter.java:36))
+io.netty.util.concurrent.DefaultPromise.notifyListener0(DefaultPromise.java:590))
+io.netty.util.concurrent.DefaultPromise.notifyListenersNow(DefaultPromise.java:557))
+io.netty.util.concurrent.DefaultPromise.notifyListeners(DefaultPromise.java:492))
+io.netty.util.concurrent.DefaultPromise.setValue0(DefaultPromise.java:636))
+io.netty.util.concurrent.DefaultPromise.setSuccess0(DefaultPromise.java:625))
+io.netty.util.concurrent.DefaultPromise.trySuccess(DefaultPromise.java:105))
+io.netty.util.concurrent.PromiseCombiner.tryPromise(PromiseCombiner.java:170))
+io.netty.util.concurrent.PromiseCombiner.access$600(PromiseCombiner.java:35))
+io.netty.util.concurrent.PromiseCombiner$1.operationComplete0(PromiseCombiner.java:62))
+io.netty.util.concurrent.PromiseCombiner$1.operationComplete(PromiseCombiner.java:44))
+io.netty.util.concurrent.DefaultPromise.notifyListener0(DefaultPromise.java:590))
+io.netty.util.concurrent.DefaultPromise.notifyListenersNow(DefaultPromise.java:557))
+io.netty.util.concurrent.DefaultPromise.notifyListeners(DefaultPromise.java:492))
+io.netty.util.concurrent.DefaultPromise.setValue0(DefaultPromise.java:636))
+io.netty.util.concurrent.DefaultPromise.setSuccess0(DefaultPromise.java:625))
+io.netty.util.concurrent.DefaultPromise.setSuccess(DefaultPromise.java:97))
+io.netty.util.concurrent.MultithreadEventExecutorGroup$1.operationComplete(MultithreadEventExecutorGroup.java:117))
+io.netty.util.concurrent.DefaultPromise.notifyListener0(DefaultPromise.java:590))
+io.netty.util.concurrent.DefaultPromise.notifyListenersNow(DefaultPromise.java:557))
+io.netty.util.concurrent.DefaultPromise.access$200(DefaultPromise.java:35))
+io.netty.util.concurrent.DefaultPromise$1.run(DefaultPromise.java:503))
+io.netty.util.concurrent.AbstractEventExecutor.runTask(AbstractEventExecutor.java:173))
+io.netty.util.concurrent.GlobalEventExecutor$TaskRunner.run(GlobalEventExecutor.java:262))
+io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74))
+io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30))
+java.lang.Thread.run(Thread.java:750))
+	==================Stack Trace==================
+	io.netty.util.concurrent.DefaultPromise.incWaiters(DefaultPromise.java:658))
+	io.netty.util.concurrent.DefaultPromise.await0(DefaultPromise.java:697))
+	io.netty.util.concurrent.DefaultPromise.await(DefaultPromise.java:295))
+	io.netty.util.concurrent.DefaultPromise.get(DefaultPromise.java:359))
+	io.lettuce.test.resource.TestClientResources$1.run(TestClientResources.java:45))
+"""
