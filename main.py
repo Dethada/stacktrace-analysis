@@ -5,10 +5,13 @@ import sys
 import re
 import html
 import tomllib
+import subprocess
 from typing import Tuple, List, Optional
 from dataclasses import dataclass
 from ts import get_code_snippet
 from template import HEADER, TABLE_HEADER, FOOTER
+
+ACCESSED_PROJECTS = set()
 
 @dataclass
 class LineData:
@@ -19,6 +22,14 @@ class LineData:
     line_num: int
     expected_suffix: str
     line_of_code: str
+    project_dir: str = ""
+
+@dataclass
+class Project:
+    name: str
+    repo_url: str
+    tags: str
+    commit: str
 
 def get_relative_path(root_path: str, filepath: str) -> str:
     """
@@ -59,12 +70,56 @@ def helper(lines: List[str], project_root: str) -> List[str]:
             result.append(output_error(line, error))
             continue
         relative_path = get_relative_path(project_root, processed_data.filepath)
+        ACCESSED_PROJECTS.add(processed_data.project_dir)
         class_details, method_details = get_code_snippet(processed_data.filepath, processed_data.line_num)
         result.append(output(processed_data, class_details, method_details, relative_path))
     return result
 
 def is_rv_format(input_str: str) -> bool:
     return not input_str.lstrip().startswith('=====')
+
+def get_project_details(project_path: str) -> Project:
+    """
+    Returns the project details from the project path.
+
+    Args:
+        project_path (str): The project path.
+
+    Returns:
+        Project: The project details.
+    """
+    project_name = os.path.basename(project_path)
+
+    def run_git_command(command):
+        try:
+            result = subprocess.run(
+                command,
+                cwd=project_path,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True
+            )
+            return result.stdout.strip()
+        except subprocess.CalledProcessError as e:
+            print(f"Error executing Git command: {e.stderr}")
+            return ""
+
+    # Get repository URL
+    repo_url = run_git_command(["git", "config", "--get", "remote.origin.url"])
+
+    # Get tags pointing to HEAD
+    tags = run_git_command(["git", "describe", "--tags"])
+
+    # Get current commit hash
+    commit = run_git_command(["git", "rev-parse", "HEAD"])
+
+    return Project(
+        name=project_name,
+        repo_url=repo_url,
+        tags=tags,
+        commit=commit
+    )
 
 def main(projects_root: str, input_file: str, output_file: str) -> None:
     """Main function that reads input lines and processes each one"""
@@ -81,12 +136,24 @@ def main(projects_root: str, input_file: str, output_file: str) -> None:
             fst_st, snd_st = extract_func(raw_stack_trace)
             fst = helper(fst_st.split('\n'), full_projects_root)
             snd = helper(snd_st.split('\n'), full_projects_root)
+            accessed_proj_dirs = sorted(list(
+                                    map(lambda x: os.path.join(full_projects_root, x),
+                                        ACCESSED_PROJECTS)))
             outfile.write(HEADER)
             outfile.write('<div class="header">\n')
             outfile.write('<h1>Originating Test:</h1>\n')
             outfile.write(f'<h2>{originating_test}</h2>\n')
             outfile.write('<h1>Algorithm:</h1>\n')
             outfile.write(f'<h2>{algorithm}</h2>\n')
+            outfile.write('<div class="table-container"><table><thead><tr><th><h2>Project</h2</th><th><h2>Version</h2></th><th><h2>Commit</h2></tr></thead><tbody>\n')
+            for proj_dir in accessed_proj_dirs:
+                project_details = get_project_details(proj_dir)
+                outfile.write(f'<tr>')
+                outfile.write(f'<td><a target="_blank" rel="noopener noreferrer" href="{project_details.repo_url}">{project_details.name}</a></td>')
+                outfile.write(f'<td>{project_details.tags}</td>')
+                outfile.write(f'<td>{project_details.commit}</td>')
+                outfile.write('</tr>')
+            outfile.write('</tbody></table></div>\n')
             outfile.write('<h1>Field Declaration:</h1>\n')
             outfile.write('<div class="header-code">\n')
             outfile.write(f'<pre><code class="large-code language-java nohljsln">{field_declaration}</code></pre>\n')
@@ -297,7 +364,8 @@ def process_line(projects_root: str, data: LineData) -> Tuple[Optional[LineData]
                 method=data.method,
                 line_num=data.line_num,
                 expected_suffix=data.expected_suffix,
-                line_of_code=code_line
+                line_of_code=code_line,
+                project_dir=project,
             ), None
 
     except FileNotFoundError:
