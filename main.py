@@ -43,8 +43,8 @@ def helper(lines: List[str], project_root: str) -> List[str]:
             print(error, file=sys.stderr)
             result.append(output_error(line, error))
             continue
-        code_snippet = get_code_snippet(processed_data.filepath, processed_data.line_num)
-        result.append(output(processed_data, code_snippet))
+        class_details, method_details = get_code_snippet(processed_data.filepath, processed_data.line_num)
+        result.append(output(processed_data, class_details, method_details))
     return result
 
 def is_rv_format(input_str: str) -> bool:
@@ -71,7 +71,7 @@ def main(project_root: str, input_file: str, output_file: str) -> None:
             outfile.write(f'<h2>{algorithm}</h2>\n')
             outfile.write('<h1>Field Declaration:</h1>\n')
             outfile.write('<div class="header-code">\n')
-            outfile.write(f'<pre><code class="large-code language-java">{field_declaration}</code></pre>\n')
+            outfile.write(f'<pre><code class="large-code language-java nohljsln">{field_declaration}</code></pre>\n')
             outfile.write('</div>\n')
             outfile.write('</div>\n')
             outfile.write(TABLE_HEADER)
@@ -254,10 +254,13 @@ def process_line(project_root: str, data: LineData) -> Tuple[Optional[LineData],
     except Exception as e:
         return None, f"Error reading {file_path}: {str(e)}"
 
-def output(data: LineData, code_snippet: str) -> str:
+def output(data: LineData, class_details: dict, method_details: dict) -> str:
     result = "<td>\n"
-    result += f'<strong><code class="large-code">{data.package}#{data.method}:{data.line_num}</code></strong>\n'
-    result += f'<pre><code class="language-java large-code">\n{html.escape(code_snippet)}</code></pre>\n'
+    result += f'<strong><code class="large-code">{data.package}#{data.method}:{data.line_num}</code></strong><br>\n'
+    result += '<strong class="seperator">Class</strong>\n'
+    result += f'<pre><code class="language-java large-code" data-ln-start-from="{class_details['start_line']}">{html.escape(class_details['content'])}</code></pre>\n'
+    result += '<strong class="seperator">Method</strong>\n'
+    result += f'<pre><code class="language-java large-code" data-ln-start-from="{method_details['start_line']}">{html.escape(method_details['content'])}</code></pre>\n'
     result += "</td>"
     return result
 

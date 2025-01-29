@@ -4,11 +4,11 @@ HEADER = '''
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="src/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
-    <script>hljs.highlightAll();</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.9.0/highlightjs-line-numbers.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/languages/java.min.js"></script>
+    <script>hljs.highlightAll();hljs.initLineNumbersOnLoad({singleLine: true});</script>
     <style>
     body {
         background: #f8f9fa;
@@ -38,7 +38,7 @@ HEADER = '''
         border-collapse: collapse;
     }
     th, td {
-        width: 50%; /* Split columns equally */
+        width: auto;
         vertical-align: top;
         padding: 10px;
     }
@@ -62,6 +62,32 @@ HEADER = '''
         overflow-x: auto;
         margin: 0 auto;
         padding-bottom: 15px;
+    }
+        .hljs-ln-numbers {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+
+        text-align: center;
+        color: #ccc;
+        border-right: 1px solid #CCC;
+        vertical-align: top;
+        padding-right: 5px;
+
+        /* your custom style here */
+        width: 30px; /* Fixed width for line numbers */
+        min-width: 30px; /* Ensure it doesn't shrink */
+        box-sizing: border-box; /* Include padding in width */
+    }
+    /* for block of code */
+    .hljs-ln-code {
+        padding-left: 10px;
+    }
+    .seperator {
+        font-size: 1.2em;
     }
     </style>
   </head>
