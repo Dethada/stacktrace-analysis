@@ -96,6 +96,9 @@ HEADER = '''
         color: #d70087;
         font-size: 1.4em;
     }
+    .filepath {
+        font-size: 1.2em;
+    }
     </style>
   </head>
 '''

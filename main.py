@@ -20,6 +20,20 @@ class LineData:
     expected_suffix: str
     line_of_code: str
 
+def get_relative_path(root_path: str, filepath: str) -> str:
+    """
+    Returns the relative path of filepath with respect to root_path.
+
+    Args:
+        root_path (str): The root path.
+        filepath (str): The file path.
+
+    Returns:
+        str: The relative path of filepath with respect to root_path.
+    """
+    relative_path = filepath.removeprefix(root_path)
+    return relative_path.lstrip(os.sep)
+
 def helper(lines: List[str], project_root: str) -> List[str]:
     """Helper function to process each line of the input"""
     result = []
@@ -44,8 +58,9 @@ def helper(lines: List[str], project_root: str) -> List[str]:
             print(error, file=sys.stderr)
             result.append(output_error(line, error))
             continue
+        relative_path = get_relative_path(project_root, processed_data.filepath)
         class_details, method_details = get_code_snippet(processed_data.filepath, processed_data.line_num)
-        result.append(output(processed_data, class_details, method_details))
+        result.append(output(processed_data, class_details, method_details, relative_path))
     return result
 
 def is_rv_format(input_str: str) -> bool:
@@ -53,9 +68,7 @@ def is_rv_format(input_str: str) -> bool:
 
 def main(projects_root: str, input_file: str, output_file: str) -> None:
     """Main function that reads input lines and processes each one"""
-    # originating_test = html.escape(input('Enter the name of the originating test: '))
-    # field_declaration = html.escape(input('Enter the LOC of field declaration: '))
-    # algorithm = html.escape(input('Enter the name of the algorithm: '))
+    full_projects_root = os.path.abspath(projects_root)
     try:
         with open(input_file, 'rb') as infile, open(output_file, 'w') as outfile:
             data = tomllib.load(infile)
@@ -66,8 +79,8 @@ def main(projects_root: str, input_file: str, output_file: str) -> None:
             rv_format = is_rv_format(raw_stack_trace)
             extract_func = extract_stack_trace_rv if rv_format else extract_stack_trace
             fst_st, snd_st = extract_func(raw_stack_trace)
-            fst = helper(fst_st.split('\n'), projects_root)
-            snd = helper(snd_st.split('\n'), projects_root)
+            fst = helper(fst_st.split('\n'), full_projects_root)
+            snd = helper(snd_st.split('\n'), full_projects_root)
             outfile.write(HEADER)
             outfile.write('<div class="header">\n')
             outfile.write('<h1>Originating Test:</h1>\n')
@@ -292,9 +305,10 @@ def process_line(projects_root: str, data: LineData) -> Tuple[Optional[LineData]
     except Exception as e:
         return None, f"Error reading {file_path}: {str(e)}"
 
-def output(data: LineData, class_details: dict, method_details: dict) -> str:
+def output(data: LineData, class_details: dict, method_details: dict, relative_path: str) -> str:
     result = "<td>\n"
     result += f'<strong><code class="large-code packagename">{data.package}#{data.method}:{data.line_num}</code></strong><br>\n'
+    result += f'<p class="filepath">{relative_path}</p>\n'
     result += '<strong class="seperator">Class</strong>\n'
     result += f'<pre><code class="language-java large-code" data-ln-start-from="{class_details['start_line']}">{html.escape(class_details['content'])}</code></pre>\n'
     result += '<strong class="seperator">Method</strong>\n'
