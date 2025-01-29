@@ -11,7 +11,7 @@ HEADER = '''
     <script>hljs.highlightAll();hljs.initLineNumbersOnLoad({singleLine: true});</script>
     <style>
     body {
-        background: #f8f9fa;
+        background: #bcbcbc;
         padding: 0 24px;
         margin: 0;
         color: black;
@@ -21,7 +21,7 @@ HEADER = '''
         align-items: flex-start;
     }
     table, th, td {
-        border: 1px solid black;
+        border: 3px solid black;
     }
     .header {
         width: 100%;
@@ -87,9 +87,14 @@ HEADER = '''
     /* for block of code */
     .hljs-ln-code {
         padding-left: 10px;
+        border: 1px solid black;
     }
     .seperator {
         font-size: 1.2em;
+    }
+    .packagename {
+        color: #d70087;
+        font-size: 1.4em;
     }
     </style>
   </head>

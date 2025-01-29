@@ -51,7 +51,7 @@ def helper(lines: List[str], project_root: str) -> List[str]:
 def is_rv_format(input_str: str) -> bool:
     return not input_str.lstrip().startswith('=====')
 
-def main(project_root: str, input_file: str, output_file: str) -> None:
+def main(projects_root: str, input_file: str, output_file: str) -> None:
     """Main function that reads input lines and processes each one"""
     # originating_test = html.escape(input('Enter the name of the originating test: '))
     # field_declaration = html.escape(input('Enter the LOC of field declaration: '))
@@ -66,8 +66,8 @@ def main(project_root: str, input_file: str, output_file: str) -> None:
             rv_format = is_rv_format(raw_stack_trace)
             extract_func = extract_stack_trace_rv if rv_format else extract_stack_trace
             fst_st, snd_st = extract_func(raw_stack_trace)
-            fst = helper(fst_st.split('\n'), project_root)
-            snd = helper(snd_st.split('\n'), project_root)
+            fst = helper(fst_st.split('\n'), projects_root)
+            snd = helper(snd_st.split('\n'), projects_root)
             outfile.write(HEADER)
             outfile.write('<div class="header">\n')
             outfile.write('<h1>Originating Test:</h1>\n')
@@ -294,7 +294,7 @@ def process_line(projects_root: str, data: LineData) -> Tuple[Optional[LineData]
 
 def output(data: LineData, class_details: dict, method_details: dict) -> str:
     result = "<td>\n"
-    result += f'<strong><code class="large-code">{data.package}#{data.method}:{data.line_num}</code></strong><br>\n'
+    result += f'<strong><code class="large-code packagename">{data.package}#{data.method}:{data.line_num}</code></strong><br>\n'
     result += '<strong class="seperator">Class</strong>\n'
     result += f'<pre><code class="language-java large-code" data-ln-start-from="{class_details['start_line']}">{html.escape(class_details['content'])}</code></pre>\n'
     result += '<strong class="seperator">Method</strong>\n'
@@ -303,10 +303,10 @@ def output(data: LineData, class_details: dict, method_details: dict) -> str:
     return result
 
 def output_unknown(line: str) -> str:
-    return f'<td><strong><code class="large-code">Unknown line</code></strong><br><div class="wrap">{html.escape(line)}</div></td>'
+    return f'<td><strong><code class="large-code packagename">Unknown line</code></strong><br><div class="wrap">{html.escape(line)}</div></td>'
 
 def output_error(line: str, error: str) -> str:
-    return f'<td><strong>Error</strong><br><code class="large-code">{html.escape(line)}</code><br>{error}</td>'
+    return f'<td><strong>Error</strong><br><code class="large-code packagename">{html.escape(line)}</code><br>{error}</td>'
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
