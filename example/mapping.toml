@@ -1,2 +1,2 @@
 "org.eclipse.jetty" = "jetty.project"
-"com.company.product" = "product-dir"
+"io.vlingo.xoom.actors" = "xoom-actors"
