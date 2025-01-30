@@ -92,7 +92,7 @@ def extract_func_declaration(source_code, node) -> Tuple[int, str]:
     return (start_line, source_code[start_byte:node.end_byte].strip())
 
 def extract_func(source_code, node) -> Tuple[int, str]:
-    func_str = source_code[node.start_byte:node.end_byte].strip()
+    func_str = source_code[node.start_byte-1:node.end_byte].strip()
     start_line = node.start_point[0] + 1
     # Extract the entire function using the node's byte range
     return (start_line, func_str)
