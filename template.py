@@ -80,8 +80,8 @@ HEADER = '''
         padding-right: 5px;
 
         /* your custom style here */
-        width: 30px; /* Fixed width for line numbers */
-        min-width: 30px; /* Ensure it doesn't shrink */
+        width: 40px; /* Fixed width for line numbers */
+        min-width: 40px; /* Ensure it doesn't shrink */
         box-sizing: border-box; /* Include padding in width */
     }
     /* for block of code */
