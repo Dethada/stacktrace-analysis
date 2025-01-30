@@ -45,7 +45,7 @@ def get_relative_path(root_path: str, filepath: str) -> str:
     relative_path = filepath.removeprefix(root_path)
     return relative_path.lstrip(os.sep)
 
-def helper(lines: List[str], project_root: str) -> List[str]:
+def helper(lines: List[str], project_root: str, mapping: Optional[dict] = None) -> List[str]:
     """Helper function to process each line of the input"""
     result = []
     for raw_line in lines:
@@ -64,7 +64,7 @@ def helper(lines: List[str], project_root: str) -> List[str]:
         if data.line_num == -1:
             result.append(output_unknown(line))
             continue
-        processed_data, error = process_line(project_root, data)
+        processed_data, error = process_line(project_root, data, mapping)
         if error:
             print(error, file=sys.stderr)
             result.append(output_error(line, error))
@@ -121,9 +121,20 @@ def get_project_details(project_path: str) -> Project:
         commit=commit
     )
 
-def main(projects_root: str, input_file: str, output_file: str) -> None:
+def main(projects_root: str, input_file: str, output_file: str, mapping_file: Optional[str] = None) -> None:
     """Main function that reads input lines and processes each one"""
     full_projects_root = os.path.abspath(projects_root)
+
+    # Load mapping file if provided
+    mapping = None
+    if mapping_file:
+        try:
+            with open(mapping_file, 'rb') as f:
+                mapping = tomllib.load(f)
+        except Exception as e:
+            print(f"Error loading mapping file: {str(e)}", file=sys.stderr)
+            sys.exit(1)
+
     try:
         with open(input_file, 'rb') as infile, open(output_file, 'w') as outfile:
             data = tomllib.load(infile)
@@ -134,8 +145,8 @@ def main(projects_root: str, input_file: str, output_file: str) -> None:
             rv_format = is_rv_format(raw_stack_trace)
             extract_func = extract_stack_trace_rv if rv_format else extract_stack_trace
             fst_st, snd_st = extract_func(raw_stack_trace)
-            fst = helper(fst_st.split('\n'), full_projects_root)
-            snd = helper(snd_st.split('\n'), full_projects_root)
+            fst = helper(fst_st.split('\n'), full_projects_root, mapping)
+            snd = helper(snd_st.split('\n'), full_projects_root, mapping)
             accessed_proj_dirs = sorted(list(
                                     map(lambda x: os.path.join(full_projects_root, x),
                                         ACCESSED_PROJECTS)))
@@ -295,29 +306,31 @@ def get_directories(projects_root: str) -> List[str]:
     """Get all directories in the project root"""
     return [name for name in os.listdir(projects_root) if os.path.isdir(os.path.join(projects_root, name))]
 
-def find_most_likely_project(package_name: str, project_directories: List[str]) -> Optional[str]:
+def find_most_likely_project(package_name: str, project_directories: List[str], mapping: Optional[dict] = None) -> Optional[str]:
     """
     Find the most likely project for a given package name.
 
     Args:
         package_name (str): The Java package name.
         project_directories (list): A list of project directories.
+        mapping (dict, optional): A mapping of package prefixes to directory names.
 
     Returns:
         str: The most likely project directory.
     """
-    # Split the package name into its constituent parts
-    package_parts = package_name.split('.')
+    # First check the mapping if provided
+    if mapping:
+        for prefix, directory in mapping.items():
+            if package_name.startswith(prefix):
+                return directory
 
-    # Iterate over each package part
+    # Fall back to existing logic
+    package_parts = package_name.split('.')
     for part in package_parts:
-        # Iterate over each project directory
         for project in project_directories:
-            # Check if the package part is in the project directory (case-insensitive)
             if part.lower() == project.lower():
                 return project
 
-    # not found
     return None
 
 def find_file_by_suffix(project_root: str, expected_suffix: str) -> List[str]:
@@ -334,9 +347,9 @@ def find_file_by_suffix(project_root: str, expected_suffix: str) -> List[str]:
 
     return matches
 
-def process_line(projects_root: str, data: LineData) -> Tuple[Optional[LineData], Optional[str]]:
+def process_line(projects_root: str, data: LineData, mapping: Optional[dict] = None) -> Tuple[Optional[LineData], Optional[str]]:
     """Process a parsed LineData object to find and read the source line"""
-    project = find_most_likely_project(data.package, get_directories(projects_root))
+    project = find_most_likely_project(data.package, get_directories(projects_root), mapping)
     if not project:
         return None, f"No project found for package: {data.package}"
     project_root = os.path.join(projects_root, project)
@@ -407,6 +420,10 @@ if __name__ == "__main__":
         'output_file',
         help='Path to output file for code lines'
     )
+    parser.add_argument(
+        '--mapping',
+        help='Optional TOML file containing package prefix to directory mappings'
+    )
     args = parser.parse_args()
-    main(args.projects_root, args.input_file, args.output_file)
+    main(args.projects_root, args.input_file, args.output_file, args.mapping)
 
