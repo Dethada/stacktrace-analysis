@@ -11,17 +11,19 @@ poetry install
 
 ## Usage
 ```
-usage: main.py [-h] projects_root input_file output_file
+usage: main.py [-h] [--mapping MAPPING] projects_root input_file output_file
 
 Find code lines from stack traces
 
 positional arguments:
-  projects_root  Path to the root directory of the projects
-  input_file     Path to input file containing stack traces
-  output_file    Path to output file for code lines
+  projects_root      Path to the root directory of the projects
+  input_file         Path to input file containing stack traces
+  output_file        Path to output file for code lines
 
 options:
-  -h, --help     show this help message and exit
+  -h, --help         show this help message and exit
+  --mapping MAPPING  Optional TOML file containing package prefix to directory mappings (default:
+                     None)
 ```
 
 ## Example
@@ -31,7 +33,7 @@ drwxr-xr-x    - david 16 Apr  2024 anima
 drwxr-xr-x    - david  3 Mar  2024 asterisk-java
 drwxr-xr-x    - david 23 Feb  2024 commons-configuration
 drwxr-xr-x    - david  4 Oct  2023 commons-net
-$ poetry run python3 ./main.py ~/projects ./input.toml ./output.html
+$ poetry run python3 ./main.py --mapping ./mapping.toml ~/projects ./input.toml ./output.html
 ```
 
 Sample input and output files are available in the `example/` directory.
